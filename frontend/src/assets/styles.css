@@ -1,0 +1,45 @@
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #ccc;
+    margin-bottom: 10px;
+  }
+  
+  .tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    outline: none;
+    transition: background-color 0.3s ease;
+  }
+  
+  .tab:hover {
+    background-color: #f0f0f0;
+  }
+  
+  .tab.active {
+    border-bottom: 2px solid;
+    font-weight: bold;
+  }
+  
+  .tab-content {
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
+  
+  .faq {
+    margin-bottom: 20px;
+  }
+  
+  .faq h3 {
+    margin: 0;
+    padding: 10px;
+    font-weight: bolder;
+  }
+  
+  .faq p {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-top: none;
+  }
