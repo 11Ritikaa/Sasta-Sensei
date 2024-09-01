@@ -1,3 +1,4 @@
+import json
 import re
 from flask import jsonify;
 
@@ -36,6 +37,7 @@ def create_standard_response(status, status_code, data=None, message=None):
         response['data'] = data
     if message:
         response['message'] = message
+        
     return jsonify(response), status_code
 
 def is_url_valid(url:str)-> bool:

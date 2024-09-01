@@ -96,6 +96,19 @@ def get_all_products():
         return  get_all_products_from_db()
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+@app.route("/api/get_product",methods=['GET']) # type: ignore
+def get_Product():
+    data = request.get_json()
+    if 'id' not in data:
+        return create_standard_response('error',400,None,'Invalid Product ID')
+    asin  = data.get('id')
+
+    product = check_product_exists(asin)
+    if (product):
+        return product
+    else:
+        return create_standard_response('error',404,None,'product not found')
 
 if __name__ == '__main__':
     app.run(debug=True)
