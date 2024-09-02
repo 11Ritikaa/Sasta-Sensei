@@ -1,7 +1,6 @@
 from json import dumps
 from pymongo import MongoClient, errors
 from flask import jsonify
-from bson import json_util
 from helpers import create_standard_response
 
 # Initialize MongoDB connection
@@ -54,13 +53,7 @@ def save_product_to_db(product_data):
 
 
 def get_all_products_from_db():
-    try:
-        cursor = collection.find()  # Retrieve all documents
-        products = list(cursor)  # Convert cursor to a list of dictionaries
-        if products: 
-            return jsonify(products)
-        else:
-            return create_standard_response('success',404,None,'error aa gyi beti re baap')
+    cursor = collection.find()  # Retrieve all documents
+    products = list(cursor)  # Convert cursor to a list of dictionaries
+    return products
 
-    except Exception as e:
-        return create_standard_response('error', 500, None, str(e))

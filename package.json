@@ -12,6 +12,8 @@
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "mongoose": "^8.5.4"
+    "mongoose": "^8.5.4",
+    "react-router-dom": "^6.26.1",
+    "recharts": "^2.12.7"
   }
 }

@@ -23,7 +23,7 @@ const Navbar = () => {
       <div className="bg-purple-800 py-7">
         <div className="container mx-auto flex items-center justify-between">
           <div className="ml-4">
-            <span className="text-xl font-bold">SastaSansei</span>
+            <span className="text-xl font-bold">SastaSensei</span>
           </div>
           <div className="flex items-center space-x-2 mr-5">
           <span className="text-white ml-2">Quick Search</span>

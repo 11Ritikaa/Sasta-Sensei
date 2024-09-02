@@ -29,7 +29,7 @@ const Footer = () => {
         </div>
       </div>
       <div className="container mx-auto mt-16 text-center">
-        <p className="font-semibold">© 2024 Sasta Sansei. All Rights Reserved.</p>
+        <p className="font-semibold">© 2024 Sasta Sensei. All Rights Reserved.</p>
         <p className="mt-2">We use cookies to offer better online experiences. By visiting and using Sasta Sensei, you consent to our use of cookies. Learn about your options, rights and more by reading our Terms & Conditions and Privacy Policy.</p>
       </div>
     </footer>
