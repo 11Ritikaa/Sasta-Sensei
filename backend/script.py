@@ -33,7 +33,7 @@ def generate_price_update_query(price: int, max_price: int, min_price: int):
 try:
     client = MongoClient('mongodb+srv://superjunkie:1234567899@cluster0.nwirkbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
     db = client['amazon_price_tracker']  # Database name
-    collection = db['test_products']  # Collection name
+    collection = db['products']  # Collection name
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")

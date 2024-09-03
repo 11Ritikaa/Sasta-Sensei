@@ -1,7 +1,6 @@
 from datetime import datetime
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, request, jsonify
 from bs4 import BeautifulSoup
-import requests
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from helpers import extract_asin_from_url, extract_ratings, create_standard_response, create_response, is_url_valid
@@ -103,10 +102,6 @@ def get_all_products():
 @app.route("/api/get_product", methods=['GET'])
 def get_Product():
     asin = request.args.get('id')
-    # if 'id' not in data:
-    #     return create_standard_response('error', 400, None, 'Invalid Product ID')
-    # asin = data.get('id')
-
     product = check_product_exists(asin)
     if product:
         return product
