@@ -6,6 +6,10 @@ from selenium.webdriver.chrome.options import Options
 from helpers import extract_asin_from_url, extract_ratings, create_standard_response, create_response, is_url_valid
 from db import get_all_products_from_db, save_product_to_db, check_product_exists
 from flask_cors import CORS
+from dotenv import load_dotenv
+import os 
+
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)

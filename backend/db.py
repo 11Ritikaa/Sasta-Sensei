@@ -2,12 +2,14 @@ from json import dumps
 from pymongo import MongoClient, errors
 from flask import jsonify
 from helpers import create_standard_response
+import os 
 
 # Initialize MongoDB connection
 try:
-    client = MongoClient('mongodb+srv://superjunkie:1234567899@cluster0.nwirkbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+    client = MongoClient(os.getenv('MONGO_URI'))
     db = client['amazon_price_tracker']  # Database name
     collection = db['products']  # Collection name
+    test_collection = db['test_products']
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")
