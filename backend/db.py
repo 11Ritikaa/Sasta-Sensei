@@ -1,61 +1,39 @@
-from json import dumps
-from pymongo import MongoClient, errors
-from flask import jsonify
-from helpers import create_standard_response
+from pymongo import MongoClient
 import os 
 
-# Initialize MongoDB connection
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
     db = client['amazon_price_tracker']  # Database name
     collection = db['products']  # Collection name
-    test_collection = db['test_products']
+    #test_collection = db['test_products']
+    collection = db['products']
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")
 
-
-def check_product_exists(asin):
-        doc = collection.find_one({'_id': asin})
-        if not doc:
-            return False
-        else:
-            return create_standard_response('success', 200, doc)
-
-def save_product_to_db(product_data):
-    try:
-        # Define the product document using the original structure
-        product_document = {
-            "_id": product_data['id'],  
-            "productTitle": product_data['productTitle'],
-            "currentPrice": product_data['currentPrice'],
-            "maxPrice": product_data['maxPrice'],
-            "minPrice": product_data['minPrice'],
-            "avgPrice": product_data['avgPrice'],
-            "image_url": product_data['imageUrl'],
-            "rating": product_data['rating'],
-            "priceHistory": product_data['priceHistory']
-        }
-
-        # Insert the product document into the database
-        result = collection.insert_one(product_document)
-
-        if result.acknowledged:
-            return create_standard_response('success', 201, product_document, 'Product inserted successfully')
-        else:
-            return create_standard_response('error', 500,None,'DB error')
-
-    except errors.DuplicateKeyError as e:
-        print(f"DuplicateKeyError: {str(e)}")
-        return create_standard_response('error', 400, None, 'Product already exists')
-
-    except Exception as e:
-        print(f"An error occurred: {str(e)}")
-        return create_standard_response('error', 500, None, str(e))
-
-
-def get_all_products_from_db():
+def get_all_products_db():
     cursor = collection.find()  # Retrieve all documents
     products = list(cursor)  # Convert cursor to a list of dictionaries
     return products
 
+def get_random_products_db():
+    pipeline = [
+        { "$sample": { "size": 10 } },
+        { "$project": { "priceHistory": 0 } }  # Exclude the priceHistory field
+    ]
+    random_products = list(collection.aggregate(pipeline))
+    return random_products
+
+def check_product_exists(product_id):
+    doc = collection.find_one({'_id': product_id})
+    if not doc:
+        return False
+    else:
+        return doc
+
+def save_product_to_db(product_data):
+    result = collection.insert_one(product_data)
+    if result.acknowledged:
+        return product_data
+    else:
+        return None
