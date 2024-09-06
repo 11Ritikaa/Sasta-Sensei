@@ -21,7 +21,7 @@ def get_data_amazon(asin):
     response =  save_product_to_db(product_data)
     if(response):
         return create_standard_response('success',201,response)
-    return create_standard_response('error',500,None,'oops!! something went wrong!! Try Again Later')
+    return create_standard_response('error',500,None,'Oops!! something went wrong!! Try Again Later')
      
 @app.route('/api/products', methods=['GET'])
 def get_all_products():
@@ -72,7 +72,7 @@ def get_product_url():
         asin = extract_asin_from_url(product_url)
         response = check_product_exists(asin)
         if response:
-            return create_standard_response('succcess',200,response)
+            return create_standard_response('Succcess',200,response)
         else:
             return get_data_amazon(asin)
     except Exception as e:

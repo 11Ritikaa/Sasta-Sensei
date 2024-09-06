@@ -1,9 +1,9 @@
 from utils import create_product_data
 from paapi5_python_sdk.api.default_api import DefaultApi
-from paapi5_python_sdk.models.condition import Condition
-from paapi5_python_sdk.models.get_items_request import GetItemsRequest
-from paapi5_python_sdk.models.get_items_resource import GetItemsResource
-from paapi5_python_sdk.models.partner_type import PartnerType
+from paapi5_python_sdk.condition import Condition
+from paapi5_python_sdk.get_items_request import GetItemsRequest
+from paapi5_python_sdk.get_items_resource import GetItemsResource
+from paapi5_python_sdk.partner_type import PartnerType
 from dotenv import load_dotenv
 from datetime import datetime
 load_dotenv()
@@ -40,7 +40,6 @@ def get_items(asins: str|list):
     item_ids = [asins]
     get_items_resource = [
         GetItemsResource.BROWSENODEINFO_BROWSENODES_ANCESTOR,
-        GetItemsResource.CUSTOMERREVIEWS_STARRATING,
         GetItemsResource.IMAGES_PRIMARY_LARGE,
         GetItemsResource.ITEMINFO_TITLE,
         GetItemsResource.OFFERS_LISTINGS_PRICE,
@@ -63,9 +62,9 @@ def get_items(asins: str|list):
     asin = title = imageURL = MRP = discountPercent = pageURL = cat_name = cat_id = price = None
     response = default_api.get_items(get_items_request)
     """ Parse response """
-    if response.items_result is not None:
+    if response.items_result is not None: # type: ignore
         print("Printing all item information in ItemsResult:")
-        response_list = parse_response(response.items_result.items)
+        response_list = parse_response(response.items_result.items) # type: ignore
         for item_id in item_ids:
             print("Printing information about the item_id: ", item_id)
             if item_id in response_list:
@@ -100,7 +99,7 @@ def get_items(asins: str|list):
             else:
                 print("Item not found, check errors")
                 return None
-    if response.errors is not None:
+    if response.errors is not None: # type: ignore
         return None
     price_history = [
                 {"price": price, "date": datetime.now().date().isoformat()}
