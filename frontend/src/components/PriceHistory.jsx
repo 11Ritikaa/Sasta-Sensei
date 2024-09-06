@@ -6,15 +6,14 @@ const PriceHistory = ({ products = [] }) => {
 
   const handleProductClick = (asin) => {
     
-    navigate(`/product/${asin}`);
+    navigate(`/products/${asin}`);
   };
 
-  console.log('Products in PriceHistory:', products); // Debugging line
+  console.log('Products in PriceHistory:', products);
 
    // Limit to top 10 products
-   const topProducts = products.slice(0, 10);
+   // const topProducts = products.slice(0, 10);
 
-   // Navigate to the "all deals" page (assuming this is the intended behavior)
   const handleViewAllDeals = () => {
     navigate('/products');
   };
@@ -22,7 +21,7 @@ const PriceHistory = ({ products = [] }) => {
   return (
     <div className="bg-gray-100 p-6 rounded-lg">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Price History</h2>
+        <h2 className="text-4xl font-bold">Price History</h2>
         <button
           onClick={handleViewAllDeals}
           className="bg-purple-500 text-white py-2 px-4 rounded-md hover:bg-purple-600 transition duration-300"
@@ -30,9 +29,9 @@ const PriceHistory = ({ products = [] }) => {
           View All Deals
         </button>
       </div>
-      {topProducts.length > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {topProducts.map(product => (
+      {products.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {products.map(product => (
             <div
               key={product.id}
               className="bg-white p-4 rounded-lg shadow-md cursor-pointer"

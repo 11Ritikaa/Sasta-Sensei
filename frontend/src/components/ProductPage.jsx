@@ -12,7 +12,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/get_product`, {
+        const response = await axios.get(`http://localhost:5000/api/products/${asin}`, {
           params: { id: asin }
         });
         setProduct(response.data.data);

@@ -18,9 +18,8 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/getallproducts');
-        // Ensure the response is parsed as JSON
-        const parsedProducts = response.data
+        const response = await axios.get('http://localhost:5000/api/products/random');
+        const parsedProducts = response.data.data
         setProducts(parsedProducts); // Set the products state with the parsed data
       } catch (error) {
         console.error(error)
