@@ -53,7 +53,7 @@ for result in results:
     max_price = result['maxPrice']
     min_price = result['minPrice']
     r = s.get(f'https://www.amazon.in/dp/{asin}/')
-    r.html.render(sleep=2) # type: ignore
+    r.html.render(sleep=1) # type: ignore
     try: 
       price = r.html.find('.a-price-whole')[0].text.replace('₹','').replace(',','').rstrip('.') # type: ignore
       price = int(price)

@@ -4,9 +4,8 @@ import os
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
     db = client['amazon_price_tracker']  # Database name
-    collection = db['products']  # Collection name
-    #test_collection = db['test_products']
-    collection = db['products']
+    #collection = db['products']  # Collection name
+    collection = db['test_products']
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")
@@ -37,3 +36,14 @@ def save_product_to_db(product_data):
         return product_data
     else:
         return None
+
+def get_all_categoriesDB():
+    distinct_categories = collection.distinct('categoryNames')
+    list(distinct_categories)
+    return distinct_categories
+
+def get_products_by_categoryDB(category_name: str):
+    query = {"categoryNames": category_name}
+    products = collection.find(query)
+    products_list = list(products)
+    return products_list

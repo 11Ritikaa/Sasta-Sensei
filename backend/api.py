@@ -17,11 +17,16 @@ def parse_response(item_response_list):
     return mapped_response
 
 
-def extract_category_name_and_id(data):
-    browse_nodes =  data
-    if(hasattr(browse_nodes, 'ancestor') and browse_nodes.ancestor.ancestor):
-        return  extract_category_name_and_id(browse_nodes.ancestor)
-    return browse_nodes.ancestor.display_name,browse_nodes.ancestor.id
+def extract_category_names(nodes):
+    root_names = set()
+    for node in nodes:
+        current_obj = node
+        while hasattr(current_obj,'ancestor') and current_obj.ancestor:
+            current_obj = current_obj.ancestor
+        cat_name = current_obj.context_free_name.lower()
+        root_names.add(cat_name)
+    root_names = list(root_names)
+    return root_names
     
 
 def get_items(asins: str|list):
@@ -58,8 +63,8 @@ def get_items(asins: str|list):
     except ValueError as exception:
         print("Error in forming GetItemsRequest: ", exception)
         return None
-    
-    asin = title = imageURL = MRP = discountPercent = pageURL = cat_name = cat_id = price = None
+    category_names = None
+    asin = title = imageURL = MRP = discountPercent = pageURL = price = None
     response = default_api.get_items(get_items_request)
     """ Parse response """
     if response.items_result is not None: # type: ignore
@@ -70,8 +75,7 @@ def get_items(asins: str|list):
             if item_id in response_list:
                 item = response_list[item_id]
                 if item is not None:
-                    cat_name, cat_id = extract_category_name_and_id(item.browse_node_info.browse_nodes[0].ancestor)
-                    cat_id = int(cat_id)
+                    category_names = extract_category_names(item.browse_node_info.browse_nodes)
                     if item.asin is not None:
                         asin = item.asin
                     if item.detail_page_url is not None:
@@ -104,4 +108,12 @@ def get_items(asins: str|list):
     price_history = [
                 {"price": price, "date": datetime.now().date().isoformat()}
             ]
-    return create_product_data(asin,title,price,imageURL,MRP,discountPercent,pageURL,cat_name,cat_id,price_history)
+    return create_product_data(asin = asin, 
+                               product_title = title, 
+                               price = price, 
+                               image_url = imageURL, 
+                               MRP = MRP, 
+                               percent = discountPercent, 
+                               page_url = pageURL, 
+                               category_names = category_names,
+                               price_history = price_history)

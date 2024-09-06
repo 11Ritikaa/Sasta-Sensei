@@ -29,26 +29,24 @@ def create_standard_response(status, status_code, data=None, message=None):
     return jsonify(response), status_code
 
 def create_product_data(asin: str|None, 
-                        productTitle: str|None, 
+                        product_title: str|None, 
                         price: int| None, 
                         image_url, 
                         MRP, 
                         percent,
-                        pageUrl,
-                        cat_name, 
-                        cat_id,
+                        page_url,
+                        category_names, 
                         price_history):
      return {
         '_id': asin,
-        'productTitle': productTitle,
+        'productTitle': product_title,
         'currentPrice': price,
         'maxPrice': price,
         'minPrice': price,
         "imageUrl": image_url,
         'MRP': MRP,
         'discountPercent': percent,
-        'pageUrl': pageUrl,
-        'categoryName': cat_name,
-        'categoryId': cat_id,
+        'pageUrl': page_url,
+        'categoryNames': category_names,
         'priceHistory': price_history
     }
