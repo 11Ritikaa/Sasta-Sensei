@@ -33,7 +33,7 @@ def check_product_exists(product_id):
 def save_product_to_db(product_data):
     result = collection.insert_one(product_data)
     if result.acknowledged:
-        return product_data
+        return result.inserted_id
     else:
         return None
 
