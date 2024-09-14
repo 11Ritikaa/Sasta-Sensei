@@ -68,23 +68,25 @@ def get_product_by_id():
                 return create_standard_response('error',404,None,'no products found!!')
         except Exception as e:
             return jsonify({'status': 'error', 'message': str(e)}), 500
-    if request.method == 'POST':
-        data = request.get_json()
-        product_url = data.get('product_url')
-        if not is_url_valid(product_url):
-            return jsonify({'status': 'error', 'message': 'Invalid URL'}), 400
-        try:
-            asin = extract_asin_from_url(product_url)
-            response = check_product_exists(asin)
-            if response:
-                return create_standard_response('succcess',200,response)
-            else:
-                return get_data_amazon(asin)
-        except Exception as e:
-            return create_standard_response('Error!', 500, None, str(e))
-    
     return jsonify({'msg': 'unauthorized access'}),401
-    
+
+@app.route('/api/product_url',methods=['POST'])
+def get_product_from_url():
+    data = request.get_json()
+    product_url = data.get('product_url')
+    if not is_url_valid(product_url):
+        return jsonify({'status': 'error', 'message': 'Invalid URL'}), 400
+    try:
+        asin = extract_asin_from_url(product_url)
+        response = check_product_exists(asin)
+        if response:
+            return create_standard_response('succcess',200,asin)
+        else:
+            return get_data_amazon(asin)
+    except Exception as e:
+        return create_standard_response('Error!', 500, None, str(e))
+
+
 @app.route('/api/products/cat',methods=['GET'])
 def get_products_by_cat():
     category_name = request.args.get('category')

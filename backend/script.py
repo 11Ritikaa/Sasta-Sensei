@@ -1,4 +1,3 @@
-from requests_html import HTMLSession
 from pymongo import MongoClient
 from datetime import datetime
 from api import get_price_info
@@ -52,7 +51,7 @@ for i in range(0, len(ids), 10):
     for item in price_info_list: # type: ignore
         for obj in result_list: 
             if obj.get('_id') == item['id']:
-                asin = item['id'];
+                asin = item['id']
                 query = generate_price_update_query(item['price'], obj['maxPrice'], obj['minPrice'], item['discount_percent'])
                 response = collection.update_one({'_id': obj.get('_id')}, query)
                 if response.acknowledged:
@@ -62,23 +61,5 @@ for i in range(0, len(ids), 10):
             else:
                 continue
     
-    
-#Scrape data
-# for result in results:
-#     asin = result['_id']
-#     max_price = result['maxPrice']
-#     min_price = result['minPrice']
-#     r = s.get(f'https://www.amazon.in/dp/{asin}/')
-#     r.html.render(sleep=1) # type: ignore
-#     try: 
-#       price = r.html.find('.a-price-whole')[0].text.replace('₹','').replace(',','').rstrip('.') # type: ignore
-#       price = int(price)
-    #   query = generate_price_update_query(price, max_price, min_price)
-    #   response = collection.update_one({'_id': asin}, query)
-    #   if response.acknowledged:
-    #     print(f'Updated price for ASIN {asin}')
-    #   else:
-    #     print(f'Price not found for ASIN {asin}')
-#     except Exception as e:
-#         print(str(e))
+
     
