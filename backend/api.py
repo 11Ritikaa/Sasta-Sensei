@@ -117,3 +117,72 @@ def get_items(asins: str|list):
                                page_url = pageURL, 
                                category_names = category_names,
                                price_history = price_history)
+
+
+def get_price_info(asins:list):
+    access_key = os.getenv('AMAZON_ACCESS_KEY')
+    secret_key = os.getenv('AMAZON_SECRET_KEY')
+    partner_tag = os.getenv('PARTNER_TAG')
+    host = os.getenv('HOST')
+    region = os.getenv('REGION')
+
+    #API declaration
+    default_api = DefaultApi(
+        access_key=access_key, secret_key=secret_key, host=host, region=region
+    )
+
+    #what items to search and resources to fetch
+    item_ids = asins
+    get_items_resource = [
+        GetItemsResource.OFFERS_LISTINGS_PRICE,
+    ]
+    
+    info_list = []
+
+    #forming request 
+    try:
+        get_items_request = GetItemsRequest(
+            partner_tag=partner_tag,
+            partner_type=PartnerType.ASSOCIATES,
+            marketplace="www.amazon.in",
+            condition=Condition.NEW,
+            item_ids=item_ids,
+            resources=get_items_resource,
+        )
+    except ValueError as exception:
+        print("Error in forming GetItemsRequest: ", exception)
+        return None
+    category_names = None
+    asin = title = imageURL = MRP = discountPercent = pageURL = price = None
+    response = default_api.get_items(get_items_request)
+    """ Parse response """
+    if response.items_result is not None:
+        print("Printing all item information in ItemsResult:")
+        response_list = parse_response(response.items_result.items)
+        for item_id in item_ids:
+            print("Printing information about the item_id: ", item_id)
+            if item_id in response_list:
+                item = response_list[item_id]
+                if item is not None:
+                    if (
+                        item.offers is not None
+                        and item.offers.listings is not None
+                        and item.offers.listings[0].price is not None
+                        and item.offers.listings[0].price.display_amount is not None
+                    ):
+                        extract_info ={
+                            'id': item_id,
+                            'price': item.offers.listings[0].price.amount,
+                            'discount_percent': item.offers.listings[0].price.savings.percentage
+                        }
+                        info_list.append(extract_info)
+
+    else:
+        print("Item not found, check errors")
+        return None
+    if response.errors is not None:
+        return None
+    
+    return info_list
+    
+    
