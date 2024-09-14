@@ -13,8 +13,8 @@ const ProductPage = () => {
     lowestPrice: 0,
     averagePrice: 0,
   });
-  const [showAlertBox, setShowAlertBox] = useState(false); // State for toggling the alert box
-  const [email, setEmail] = useState(''); // State to store user email
+  const [showAlertBox, setShowAlertBox] = useState(false);
+  const [email, setEmail] = useState('');
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -38,11 +38,10 @@ const ProductPage = () => {
   };
 
   const handleSetPriceAlert = () => {
-    setShowAlertBox(!showAlertBox); // Toggle the alert box visibility
+    setShowAlertBox(!showAlertBox);
   };
 
   const handleNotifyMe = () => {
-    // Logic to handle the notification can be added here
     console.log('User will be notified at: ', email);
   };
 
@@ -63,10 +62,16 @@ const ProductPage = () => {
           {/* Right Side: Product Details */}
           <div className="md:w-1/2">
             <h1 className="text-3xl font-bold mb-4">{product.productTitle}</h1>
-            <p className="text-green-500 font-bold text-xl">₹{product.currentPrice}</p>
+
+            {/* Price Section */}
+            <div className="text-xl mb-4">
+              <s className="text-gray-500">₹{product.MRP}</s>
+              <span className="text-green-500 ml-2">({product.discountPercent}% off)</span>
+              <p className="text-green-600 font-bold text-2xl">₹{product.currentPrice}</p>
+            </div>
+
             <p className="text-gray-500 text-sm mt-1">Amazon</p>
 
-            {/* Conditional rendering of the Price Alert Box */}
             {showAlertBox && (
               <div className="mt-4 p-4 bg-blue-100 rounded-md shadow-lg">
                 <h2 className="text-lg font-bold mb-2">Price Alert</h2>
@@ -114,10 +119,10 @@ const ProductPage = () => {
           <PriceHistoryChart data={product.priceHistory} onPriceUpdate={handlePriceUpdate} />
         </div>
 
-        <p className='font-serif'>
+        <p className='font-sans'>
           You can check the price history of <b>{product.productTitle}</b> above. 
           This product price is <b>₹{product.currentPrice}</b> but the lowest price is <b>₹{priceInfo.lowestPrice}</b>.
-          The average and highest price are <b>{priceInfo.averagePrice}</b> and <b>₹{priceInfo.highestPrice}</b> respectively.
+          The average and highest price are <b>₹{priceInfo.averagePrice}</b> and <b>₹{priceInfo.highestPrice}</b> respectively.
         </p>
       </div>
       <Footer />

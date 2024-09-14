@@ -43,12 +43,13 @@ const PriceHistory = ({ products = [] }) => {
                 className="w-full h-36 object-contain rounded-md mb-2"
               />
               <div className="text-center">
-                <h3 className="font-bold text-lg">{product.productTitle}</h3>
-                <p className="text-green-500 font-bold text-xl mt-1">₹{product.currentPrice}</p>
+                <h3 className="font-bold text-lg">{product.productTitle}</h3><br/>
+                <div className="text-xl mb-4">
+                  <s className="text-gray-500">₹{product.MRP}</s>
+                  <span className="text-green-500 ml-2">({product.discountPercent}% off)</span>
+                  <p className="text-green-600 font-bold text-2xl">₹{product.currentPrice}</p>
+                </div>
                 <p className="text-gray-500 text-sm mt-1">Amazon</p>
-                <p className="text-yellow-500 text-sm mt-1">
-                  {renderStars(product.rating)}
-                </p>
               </div>
             </div>
           ))}
@@ -60,10 +61,5 @@ const PriceHistory = ({ products = [] }) => {
   );
 };
 
-// Utility function to render stars based on rating
-const renderStars = (rating) => {
-  const stars = Math.round(parseFloat(rating));
-  return '⭐'.repeat(stars) + '☆'.repeat(5 - stars);
-};
 
 export default PriceHistory;

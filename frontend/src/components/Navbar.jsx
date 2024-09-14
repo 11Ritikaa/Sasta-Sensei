@@ -1,32 +1,31 @@
+/* eslint-disable no-unused-vars */
 import { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom'; 
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
-import { GlobeAltIcon } from '@heroicons/react/24/outline';
+import { GlobeAltIcon, RssIcon } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
   const [productUrl, setProductUrl] = useState('');
-  const [loading, setLoading] = useState(false); // Loading state
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [categories, setCategories] = useState([]); // State to store categories
-  const navigate = useNavigate(); 
+  const [categories, setCategories] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://localhost:5000/api/categories');
         if (response.data.status === 'success') {
-          console.log(response.data.data);
-          setCategories(response.data.data); // Set categories in state
+          setCategories(response.data.data);
         } else {
           setError(response.data.message);
         }
-      // eslint-disable-next-line no-unused-vars
       } catch (error) {
         setError('An error occurred while fetching categories.');
       }
     };
 
-    fetchCategories(); // Fetch categories when the component mounts
+    fetchCategories();
   }, []);
 
   const handleSearch = async (event) => {
@@ -36,24 +35,27 @@ const Navbar = () => {
       return;
     }
 
-    setLoading(true); // Start loading
+    setLoading(true);
     try {
-      
       const response = await axios.post('http://localhost:5000/api/product_url', { product_url: productUrl });
-      console.log(response)
-      if (response.status === 200) {
+      console.log(response);
+      
+      if (response.status === 200 || response.status === 201) {
         const productID = response.data.data;
         setError('');
-        navigate(`/product/${productID}`); 
+        navigate(`/product/${productID}`);
       } else {
         setError(response.data.message);
       }
-    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setError('An error occurred. Please try again later.');
     } finally {
-      setLoading(false); // Stop loading
+      setLoading(false);
     }
+  };
+
+  const toTitleCase = (str) => {
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
   };
 
   return (
@@ -79,7 +81,7 @@ const Navbar = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center ml-4">
             <img src="../src/assets/logo.png" alt="Logo" className="w-10 h-10 mr-1" />
-            <Link to="/" className="text-xl font-bold">SastaSensei</Link> 
+            <Link to="/" className="text-xl font-bold">SastaSensei</Link>
           </div>
           <form onSubmit={handleSearch} className="flex items-center space-x-2 mr-5">
             <span className="text-white ml-2">Quick Search</span>
@@ -92,29 +94,32 @@ const Navbar = () => {
             />
             <button type="submit" className="bg-orange-500 text-white px-5 py-2 rounded-md" disabled={loading}>
               {loading ? 'Loading...' : 'Search'}
-            </button> 
+            </button>
           </form>
         </div>
       </div>
+
       <nav className="bg-white py-2 shadow">
-        <div className="container mx-auto flex items-center justify-evenly space-x-3 text-black">
-          <span className="font-semibold space-x-4 ml-2">Explore:</span>
-          
-          {categories.length > 0 ? (  
-            categories.map((category) => (
-              <Link 
-                key={category} 
-                to={`/category/${category}`} // Link to category page
-                className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition"
-              >
-                {category.toUpperCase()}
-              </Link>
-            ))
-          ) : (
-            <p>Loading categories...</p>
-          )}
+        <div className="container mx-auto overflow-x-auto">
+          <div className="flex items-center space-x-4 py-2">
+            <span className="font-semibold text-lg ml-2 mr-4 whitespace-nowrap text-black">Explore:</span>
+            {categories.length > 0 ? (
+              categories.map((category) => (
+                <Link
+                  key={category}
+                  to={`/category/${category}`}
+                  className="inline-block px-4 py-2 bg-gray-100 text-gray-800 hover:bg-gray-200 rounded-md font-medium text-sm capitalize whitespace-nowrap"
+                >
+                  {toTitleCase(category)}
+                </Link>
+              ))
+            ) : (
+              <p>Loading categories...</p>
+            )}
+          </div>
         </div>
       </nav>
+
       {error && (
         <div className="container mx-auto p-4">
           <p className="text-red-500">{error}</p>

@@ -46,8 +46,12 @@ const CategoryPage = () => {
             {products.map((product) => (
               <div key={product.id} className="border rounded-lg shadow-md p-4">
                 <img src={product.imageUrl} alt={product.productTitle} className="w-full h-48 object-contain mb-4" />
-                <h2 className="font-bold text-lg">{product.productTitle}</h2>
-                <p className="text-green-500 font-bold text-xl mt-1">₹{product.currentPrice}</p>
+                <h2 className="font-bold text-lg">{product.productTitle}</h2><br/>
+                <div className="text-xl mb-4">
+                  <s className="text-gray-500">₹{product.MRP}</s>
+                  <span className="text-green-500 ml-2">({product.discountPercent}% off)</span>
+                  <p className="text-green-600 font-bold text-2xl">₹{product.currentPrice}</p>
+                </div>
                 <p className="text-gray-500 text-sm mt-1">Amazon</p>
                 <button
                   onClick={() => handleViewProduct(product._id)}
