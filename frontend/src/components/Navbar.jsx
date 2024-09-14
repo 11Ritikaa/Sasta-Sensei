@@ -1,13 +1,33 @@
-/* eslint-disable no-unused-vars */
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
+import { useState, useEffect } from 'react';
+import { useNavigate, Link } from 'react-router-dom'; 
 import axios from 'axios';
-import { GlobeAltIcon, DevicePhoneMobileIcon, ComputerDesktopIcon, MusicalNoteIcon, BookOpenIcon, HomeModernIcon, FireIcon, ShoppingBagIcon, CubeIcon, CameraIcon, UserIcon, BuildingOffice2Icon } from '@heroicons/react/24/outline';
+import { GlobeAltIcon } from '@heroicons/react/24/outline';
 
 const Navbar = () => {
   const [productUrl, setProductUrl] = useState('');
+  const [loading, setLoading] = useState(false); // Loading state
   const [error, setError] = useState('');
-  const navigate = useNavigate(); // Initialize useNavigate
+  const [categories, setCategories] = useState([]); // State to store categories
+  const navigate = useNavigate(); 
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/categories');
+        if (response.data.status === 'success') {
+          console.log(response.data.data);
+          setCategories(response.data.data); // Set categories in state
+        } else {
+          setError(response.data.message);
+        }
+      // eslint-disable-next-line no-unused-vars
+      } catch (error) {
+        setError('An error occurred while fetching categories.');
+      }
+    };
+
+    fetchCategories(); // Fetch categories when the component mounts
+  }, []);
 
   const handleSearch = async (event) => {
     event.preventDefault();
@@ -16,17 +36,23 @@ const Navbar = () => {
       return;
     }
 
+    setLoading(true); // Start loading
     try {
-      const response = await axios.post('http://localhost:5000/api/products/by-url', { product_url: productUrl });
-      if (response.data.status === 'success') {
-        const product = response.data.data;
+      
+      const response = await axios.post('http://localhost:5000/api/product_url', { product_url: productUrl });
+      console.log(response)
+      if (response.status === 200) {
+        const productID = response.data.data;
         setError('');
-        navigate(`/products/${product._id}`); // Navigate to the product details page
+        navigate(`/product/${productID}`); 
       } else {
         setError(response.data.message);
       }
+    // eslint-disable-next-line no-unused-vars
     } catch (error) {
       setError('An error occurred. Please try again later.');
+    } finally {
+      setLoading(false); // Stop loading
     }
   };
 
@@ -53,7 +79,7 @@ const Navbar = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center ml-4">
             <img src="../src/assets/logo.png" alt="Logo" className="w-10 h-10 mr-1" />
-            <span className="text-xl font-bold">SastaSensei</span>
+            <Link to="/" className="text-xl font-bold">SastaSensei</Link> 
           </div>
           <form onSubmit={handleSearch} className="flex items-center space-x-2 mr-5">
             <span className="text-white ml-2">Quick Search</span>
@@ -61,71 +87,32 @@ const Navbar = () => {
               type="text"
               value={productUrl}
               onChange={(e) => setProductUrl(e.target.value)}
-              className="px-3 py-1 text-black rounded-md"
+              className="px-4 py-2 text-black rounded-md w-96"
               placeholder="Enter name or paste the product link"
             />
-            <button type="submit" className="bg-orange-500 text-white px-4 py-1 rounded-md">Search</button>
+            <button type="submit" className="bg-orange-500 text-white px-5 py-2 rounded-md" disabled={loading}>
+              {loading ? 'Loading...' : 'Search'}
+            </button> 
           </form>
         </div>
       </div>
       <nav className="bg-white py-2 shadow">
         <div className="container mx-auto flex items-center justify-evenly space-x-3 text-black">
           <span className="font-semibold space-x-4 ml-2">Explore:</span>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <DevicePhoneMobileIcon className="w-6 h-6" />
-            <span>Mobiles</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <ComputerDesktopIcon className="w-6 h-6" />
-            <span>Computers</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <MusicalNoteIcon className="w-6 h-6" />
-            <span>Audio</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <BookOpenIcon className="w-6 h-6" />
-            <span>Books</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <HomeModernIcon className="w-6 h-6" />
-            <span>Home</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <FireIcon className="w-6 h-6" />
-            <span>Kitchen</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <ShoppingBagIcon className="w-6 h-6" />
-            <span>Clothing</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <CubeIcon className="w-6 h-6" />
-            <span>Footwear</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <CameraIcon className="w-6 h-6" />
-            <span>Cameras</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <UserIcon className="w-6 h-6" />
-            <span>Baby</span>
-          </a>
-
-          <a href="#" className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition">
-            <BuildingOffice2Icon className="w-6 h-6" />
-            <span>Furniture</span>
-          </a>
+          
+          {categories.length > 0 ? (  
+            categories.map((category) => (
+              <Link 
+                key={category} 
+                to={`/category/${category}`} // Link to category page
+                className="flex space-x-2 px-4 py-2 hover:bg-gray-200 hover:shadow-lg hover:rounded-full transition"
+              >
+                {category.toUpperCase()}
+              </Link>
+            ))
+          ) : (
+            <p>Loading categories...</p>
+          )}
         </div>
       </nav>
       {error && (

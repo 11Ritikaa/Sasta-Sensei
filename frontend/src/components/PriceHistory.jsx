@@ -6,7 +6,7 @@ const PriceHistory = ({ products = [] }) => {
 
   const handleProductClick = (asin) => {
     
-    navigate(`/products/${asin}`);
+    navigate(`/product/${asin}`);
   };
 
   console.log('Products in PriceHistory:', products);
@@ -38,7 +38,7 @@ const PriceHistory = ({ products = [] }) => {
               onClick={() => handleProductClick(product._id)}
             >
               <img
-                src={product.image_url}
+                src={product.imageUrl}
                 alt={product.productTitle}
                 className="w-full h-36 object-contain rounded-md mb-2"
               />

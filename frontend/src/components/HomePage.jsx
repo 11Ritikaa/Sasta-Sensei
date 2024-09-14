@@ -20,7 +20,7 @@ const HomePage = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/products/random');
         const parsedProducts = response.data.data
-        setProducts(parsedProducts); // Set the products state with the parsed data
+        setProducts(parsedProducts); 
       } catch (error) {
         console.error(error)
         

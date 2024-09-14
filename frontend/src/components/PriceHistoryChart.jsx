@@ -1,13 +1,21 @@
 /* eslint-disable react/prop-types */
+import { useEffect } from 'react';
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine, Label
   } from 'recharts';
   
-  const PriceHistoryChart = ({ data }) => {
+  const PriceHistoryChart = ({ data,onPriceUpdate }) => {
     // Calculate the highest, lowest, and average price
     const highestPrice = Math.max(...data.map(d => d.price));
     const lowestPrice = Math.min(...data.map(d => d.price));
     const averagePrice = (data.reduce((sum, d) => sum + d.price, 0) / data.length).toFixed(2);
+
+    useEffect(() => {
+      if (onPriceUpdate) {
+        onPriceUpdate({ highestPrice, lowestPrice, averagePrice });
+      }
+    }, [highestPrice, lowestPrice, averagePrice, onPriceUpdate]);
+  
   
     // Custom Y-axis tick formatter to show prices in 'K' (thousands) or regular format
     const formatYAxis = (tick) => {
@@ -33,7 +41,7 @@ import {
             <YAxis 
               domain={[lowestPrice - 200, highestPrice + 200]} 
               tick={{ fontSize: 12 }} 
-              tickFormatter={formatYAxis}  // Apply the custom formatter
+              tickFormatter={formatYAxis} 
             />
             <Tooltip formatter={(value) => `₹${value}`} />
             <Line type="monotone" dataKey="price" stroke="#8884d8" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" />
