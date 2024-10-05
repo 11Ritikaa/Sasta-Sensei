@@ -1,8 +1,9 @@
+import time
 from pymongo import MongoClient
 from datetime import datetime
 from api import get_price_info
 
-def generate_price_update_query(price: int, max_price: int, min_price: int, discountPercent:int):
+def generate_price_update_query(price: int, max_price: int, min_price: int, discountPercent):
     price_history_entry = {
         'price': price,
         'date': datetime.now().date().isoformat()
@@ -10,14 +11,15 @@ def generate_price_update_query(price: int, max_price: int, min_price: int, disc
     query = {
         '$set': {
             'currentPrice': price,
-            'discountPercent': discountPercent
         },
         '$push': {
             'priceHistory': price_history_entry
         }
     }
 
-    # Conditionally update maxPrice
+    if discountPercent is not None:
+        query['$set']['discountPercent'] = discountPercent
+
     if price > max_price:
         query['$set']['maxPrice'] = price
 
@@ -29,8 +31,8 @@ def generate_price_update_query(price: int, max_price: int, min_price: int, disc
 
 try:
     client = MongoClient('mongodb+srv://superjunkie:1234567899@cluster0.nwirkbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-    db = client['amazon_price_tracker']  # Database name
-    collection = db['test_products']  # Collection name
+    db = client['amazon_price_tracker'] 
+    collection = db['test_products'] 
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")
@@ -43,8 +45,10 @@ ids = [result['_id'] for result in result_list]
 
 
 for i in range(0, len(ids), 10):
-        # Extract the current batch using slicing
+
     current_batch = ids[i:i + 10]
+    if i != 0:
+        time.sleep(1.5)
     print(f"Processing batch: {current_batch}")
     price_info_list = get_price_info(current_batch)
 
@@ -52,6 +56,8 @@ for i in range(0, len(ids), 10):
         for obj in result_list: 
             if obj.get('_id') == item['id']:
                 asin = item['id']
+                if 'discount_key' not in item:
+                    item['discount_percent'] = None
                 query = generate_price_update_query(item['price'], obj['maxPrice'], obj['minPrice'], item['discount_percent'])
                 response = collection.update_one({'_id': obj.get('_id')}, query)
                 if response.acknowledged:

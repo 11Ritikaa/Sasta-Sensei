@@ -50,3 +50,15 @@ def create_product_data(asin: str|None,
         'categoryNames': category_names,
         'priceHistory': price_history
     }
+
+def is_email_valid(email: str)->bool:
+    pattern = r'''(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))'''
+    match = re.fullmatch(pattern, email)
+    return bool(match)
+
+def create_notify_data(asin:str, email:str, price:float):
+    return {
+        '_id':asin,
+        'emails': [email,],
+        'lastNotifiedPrice':price
+    }

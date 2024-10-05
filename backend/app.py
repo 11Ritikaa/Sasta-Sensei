@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from utils import create_standard_response,is_url_valid,extract_asin_from_url
-from db import get_all_products_db, get_random_products_db,check_product_exists,save_product_to_db, get_all_categoriesDB, get_products_by_categoryDB
+from utils import create_standard_response,is_url_valid,extract_asin_from_url, is_email_valid
+from db import get_all_products_db, get_random_products_db,check_product_exists,save_product_to_db, get_all_categoriesDB, get_products_by_categoryDB, check_notification_list, create_notify_doc, already_trackng, add_for_notification
 from dotenv import load_dotenv
 from api import get_items
 import os 
@@ -13,8 +13,9 @@ CORS(app)
     /api/products -GET Fetch all products -done
     /api/products/random -GET  fetch 10 random products -done
     /api/products/<product_id> -GET  fetch a product by ID -done
-    /api/products/by-url -POST fetch a product by URL -done
-    /api/products/category/<category name> -GET  fetch products of specified category
+    /api/product_url -POST fetch a product by URL -done
+    /api/products/cat -GET  fetch products of specified category
+    /api/notify-me -POST add user to the notification list
 '''
 def get_data_amazon(asin):
     product_data = get_items(asin)
@@ -56,7 +57,7 @@ def get_random_products():
     except Exception as e:
         return jsonify({'status': 'error', 'message': str(e)}), 500   
 
-@app.route('/api/product',methods=['GET', 'POST'])
+@app.route('/api/product',methods=['GET'])
 def get_product_by_id():
     if request.method == 'GET':
         try:
@@ -100,6 +101,53 @@ def get_products_by_cat():
     except Exception as e:
         return create_standard_response('Error',500,None,str(e))
 
+
+
+
+@app.route('/api/notify-me', methods=['POST'])
+def notify_me():
+    ''''
+        1. get user's email and product id for which user is subscribed
+        2. check if product is already on notify list 
+            2.1 if the product is already on the notify list add user email to email array
+            2.2 if not then create a decided with product and user's email and with products current price
+        3. start tracking for price and notify users of any price change
+    '''
+
+    body = request.get_json()
+    email = body.get('email')
+    asin = body.get('asin')
+    price = body.get('price')
+
+    valid_email = is_email_valid(email)
+    if not valid_email: 
+        return create_standard_response('error', 400, None, 'invalid email address')
+    
+    product_exists = check_notification_list(asin)
+    if(product_exists):
+        is_tracking = already_trackng(email, asin)
+        if(is_tracking):
+            return create_standard_response('success',200,None,'already tracking the product for you')
+        response = add_for_notification(email,asin,price)
+        if response is not None:
+            return create_standard_response('success',200,None,'tracking the product for you')
+    else:
+        result = create_notify_doc(email=email, asin=asin,price=price)
+        if result is not None:
+            return create_standard_response('success', 201, result)
+    return create_standard_response('error',500,None,'Something went wrong')
+
+@app.route('/api/stop-tracking',methods=['POST'])
+def stop_tracking():
+    '''
+        take the product id and user email 
+        check if the product is in the notification list
+            if it is then 
+                remove the email if present
+                return success the email is removed
+            else
+                error you're not tracking this product
+    '''
 
 if __name__ == '__main__':
     app.run(debug=True)

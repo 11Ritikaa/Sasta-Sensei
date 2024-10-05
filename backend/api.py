@@ -1,9 +1,9 @@
 from utils import create_product_data
 from paapi5_python_sdk.api.default_api import DefaultApi
-from paapi5_python_sdk.condition import Condition
-from paapi5_python_sdk.get_items_request import GetItemsRequest
-from paapi5_python_sdk.get_items_resource import GetItemsResource
-from paapi5_python_sdk.partner_type import PartnerType
+from paapi5_python_sdk import Condition
+from paapi5_python_sdk import GetItemsRequest
+from paapi5_python_sdk import GetItemsResource
+from paapi5_python_sdk import PartnerType
 from dotenv import load_dotenv
 from datetime import datetime
 load_dotenv()
@@ -152,18 +152,14 @@ def get_price_info(asins:list):
     except ValueError as exception:
         print("Error in forming GetItemsRequest: ", exception)
         return None
-    category_names = None
-    asin = title = imageURL = MRP = discountPercent = pageURL = price = None
     response = default_api.get_items(get_items_request)
     """ Parse response """
     if response.items_result is not None:
-        print("Printing all item information in ItemsResult:")
         response_list = parse_response(response.items_result.items)
         for item_id in item_ids:
-            print("Printing information about the item_id: ", item_id)
             if item_id in response_list:
                 item = response_list[item_id]
-                if item is not None:
+                if item is not None and item.offers is not None:
                     if (
                         item.offers is not None
                         and item.offers.listings is not None
@@ -173,8 +169,9 @@ def get_price_info(asins:list):
                         extract_info ={
                             'id': item_id,
                             'price': item.offers.listings[0].price.amount,
-                            'discount_percent': item.offers.listings[0].price.savings.percentage
                         }
+                        if item.offers.listings[0].price.savings is not None and item.offers.listings[0].price.savings.percentage is not None:
+                            extract_info['discount_percent'] = item.offers.listings[0].price.savings.percentage
                         info_list.append(extract_info)
 
     else:
