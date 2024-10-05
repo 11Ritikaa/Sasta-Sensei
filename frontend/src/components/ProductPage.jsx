@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
+import ReCAPTCHA from 'react-google-recaptcha';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import PriceHistoryChart from './PriceHistoryChart';
@@ -15,6 +16,8 @@ const ProductPage = () => {
   });
   const [showAlertBox, setShowAlertBox] = useState(false);
   const [email, setEmail] = useState('');
+  const [recaptchaToken, setRecaptchaToken] = useState(null);
+  const [notificationSent, setNotificationSent] = useState(false); // To track notification state
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -41,8 +44,28 @@ const ProductPage = () => {
     setShowAlertBox(!showAlertBox);
   };
 
-  const handleNotifyMe = () => {
-    console.log('User will be notified at: ', email);
+  const handleNotifyMe = async () => {
+    if (!recaptchaToken) {
+      console.log('Please complete the reCAPTCHA');
+      return;
+    }
+
+    try {
+      const response = await axios.post('http://localhost:5000/api/notify-me', {
+        email,
+        recaptchaToken,
+        asin, // Include the product ID
+        price: product.currentPrice, // Send the current product price
+      });
+      console.log('Notification request sent:', response.data);
+      setNotificationSent(true); // Set notification state to true
+    } catch (error) {
+      console.error('Error sending notification:', error);
+    }
+  };
+
+  const onRecaptchaChange = (token) => {
+    setRecaptchaToken(token); // Store the reCAPTCHA token on success
   };
 
   return (
@@ -74,29 +97,45 @@ const ProductPage = () => {
 
             {showAlertBox && (
               <div className="mt-4 p-4 bg-blue-100 rounded-md shadow-lg">
-                <h2 className="text-lg font-bold mb-2">Price Alert</h2>
-                <p className="mb-4">
-                  You will be notified when the price of this product drops. Please enter your email below:
-                </p>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email"
-                  className="border border-gray-300 rounded py-2 px-4 w-full mb-4"
-                />
-                <button
-                  className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
-                  onClick={handleNotifyMe}
-                >
-                  Notify Me
-                </button>
+                {notificationSent ? (
+                  <p className="text-green-600 font-bold">
+                    You will be notified soon! The price alert has been set for this product.
+                  </p>
+                ) : (
+                  <>
+                    <h2 className="text-lg font-bold mb-2">Price Alert</h2>
+                    <p className="mb-4">
+                      You will be notified when the price of this product drops. Please enter your email below:
+                    </p>
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="Enter your email"
+                      className="border border-gray-300 rounded py-2 px-4 w-full mb-4"
+                      disabled={notificationSent} // Disable input if notification is sent
+                    />
+                    {/* reCAPTCHA Component */}
+                    <ReCAPTCHA
+                      sitekey="6Lf7kFgqAAAAAC_eXmvv2uhlnB4v78GVrFUAXuAn"
+                      onChange={onRecaptchaChange}
+                      disabled={notificationSent} // Disable reCAPTCHA if notification is sent
+                    />
+                    <button
+                      className="bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600"
+                      onClick={handleNotifyMe}
+                      disabled={notificationSent} // Disable button if notification is sent
+                    >
+                      Notify Me
+                    </button>
+                  </>
+                )}
               </div>
             )}
 
             {/* Action Buttons */}
             <div className="mt-6">
-              <a href={product.pageUrl} target='_blank'>
+              <a href={product.pageUrl} target='_blank' rel="noopener noreferrer">
                 <button className="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 mr-2">
                   Buy on Amazon
                 </button>
