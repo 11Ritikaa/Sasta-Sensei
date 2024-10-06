@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-def create_email_body(product_name, current_price, last_notified_price, product_link, product_id):
+def create_email_body(product_name, current_price, last_notified_price, iamge_url, product_link, product_id):
     email_template = f"""
     <html>
     <head>
@@ -57,12 +57,16 @@ def create_email_body(product_name, current_price, last_notified_price, product_
             </div>
             <div class="content">
                 <h2>Good news!</h2>
+                <center>
+                 <img src={image_url} alt="product image" style="width: 200px; height: auto;">
+                </center> 
+                 <br />
                 <p>The price for <strong>{product_name}</strong> has dropped!</p>
                 <p><span class="price">Current Price: &#8377; {current_price:.2f}</span></p>
                 <p>Last Notified Price: <del>&#8377; {last_notified_price:.2f}</del></p>
                 <strong>Check it out here: <a href="{product_link}"> Go To Amazon</a></strong>
                 <br/>
-                <p>want to stop tracking this product<a href="https://example.com/email=<useremail>&asin={product_id}">Click Here!</a></p>
+                <p>want to stop tracking this product <a href="{os.getenv('BASE_URL')}/unsubscribe?asin={product_id}">Click Here!</a></p>
             </div>
             <div class="footer">
                 <p>Happy shopping!</p>
@@ -92,12 +96,12 @@ def send_batch_email(emails,subject,body):
 
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
-    print(os.getenv('MONGO_URI'));
+    print(os.getenv('MONGO_URI'))
     db = client['amazon_price_tracker']  
     notification_collection = db['notifications'] 
     print("MongoDB connection successful")
 
-    result = notification_collection.aggregate([
+    result_list = notification_collection.aggregate([
     {
         "$lookup": {
             "from": "test_products", 
@@ -121,7 +125,6 @@ try:
     ])
 
 
-    result_list = list(result)
     for notification in result_list:
         if not notification['productDetails']:
             continue
@@ -129,15 +132,15 @@ try:
         productTitle = product['productTitle']
         current_price = product['currentPrice']
         product_link = product['pageUrl']
+        image_url = product['imageUrl']
         last_notified_price = notification['lastNotifiedPrice']
         emails = notification['emails']
         product_id = notification['_id']
-        print(current_price)
-        print(last_notified_price)
+
         if current_price < last_notified_price:
             if emails:
                 subject = f"Price Drop Alert"
-                body = create_email_body(productTitle,current_price,last_notified_price,product_link,product_id)
+                body = create_email_body(productTitle,current_price,last_notified_price,image_url,product_link,product_id)
                 send_batch_email(emails, subject,body)
             notification_collection.update_one(
                 {"_id": notification['_id']},

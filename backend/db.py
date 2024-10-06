@@ -67,6 +67,14 @@ def already_trackng(email, asin):
         return True
     return False
 
+def remove_email_tracking(email, asin):
+    result =  notification_collection.update_one(
+            {'_id': asin},
+            {'$pull': {'emails': email}}
+        )
+    if result.modified_count > 0:
+        return True
+    return False
 def add_for_notification(email, asin, price):
     result = notification_collection.update_one(
             {'_id': asin},
