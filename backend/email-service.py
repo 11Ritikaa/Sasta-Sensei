@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 
-def create_email_body(product_name, current_price, last_notified_price, iamge_url, product_link, product_id):
+def create_email_body(product_name, current_price, last_notified_price, image_url, product_link, product_id):
     email_template = f"""
     <html>
     <head>
