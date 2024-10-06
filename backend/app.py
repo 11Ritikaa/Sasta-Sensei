@@ -150,7 +150,7 @@ def notify_me():
                 return create_standard_response('success', 201, result)
     else:
         return jsonify({'error': 'Invalid reCAPTCHA. Please try again.'}), 400
-    
+        
     return create_standard_response('error',500,None,'Something went wrong')
 
 @app.route('/api/unsubscribe',methods=['POST'])
@@ -178,7 +178,7 @@ def unsubcribe():
         if(email_present):
             response = remove_email_tracking(email=email, asin=asin)
             if response: 
-                return create_standard_response('success',200,None,'email removed successfully')
+                return create_standard_response('success',200,None,'Email removed successfully')
             return create_standard_response('error', 500, None, 'something went wrong')
         else:
             return create_standard_response('error', 404, None, 'No such email found')
