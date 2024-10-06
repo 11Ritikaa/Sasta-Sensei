@@ -70,7 +70,7 @@ def create_email_body(product_name, current_price, last_notified_price, iamge_ur
             </div>
             <div class="footer">
                 <p>Happy shopping!</p>
-                <p>Best, Sasta Sensei Team</p>
+                <p>Best Regards, Sasta Sensei Team</p>
             </div>
         </div>
     </body>
