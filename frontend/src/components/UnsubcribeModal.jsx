@@ -2,6 +2,7 @@
 /* eslint-disable no-unused-vars */
 import { useState } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../API';
 
 const UnsubscribeModal = ({ isOpen, onClose }) => {
   const [email, setEmail] = useState('');
@@ -25,7 +26,7 @@ const UnsubscribeModal = ({ isOpen, onClose }) => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/unsubscribe', {
+      const response = await axios.post(`${BASE_URL}/api/unsubscribe`, {
         email,
         asin,
       });

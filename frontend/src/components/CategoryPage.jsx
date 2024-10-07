@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'; // Import useNavigate
 import axios from 'axios';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { BASE_URL } from '../API';
 
 const CategoryPage = () => {
   const { category } = useParams();
@@ -14,7 +15,7 @@ const CategoryPage = () => {
     const fetchProductsByCategory = async () => {
       try {
         const cat = encodeURIComponent(category);
-        const response = await axios.get(`http://localhost:5000/api/products/cat?category=${cat}`);
+        const response = await axios.get(`${BASE_URL}/api/products/cat?category=${cat}`);
         if (response.data.status === 'success') {
           setProducts(response.data.data);
         } else {

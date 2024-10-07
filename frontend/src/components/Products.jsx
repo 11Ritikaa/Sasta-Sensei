@@ -2,13 +2,14 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
+import { BASE_URL } from '../API';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/products')
+        fetch(`${BASE_URL}/api/products`)
             .then(response =>response.json())
             .then(data => setProducts(data.data))
             .catch(error => console.error('Error fetching products:', error));

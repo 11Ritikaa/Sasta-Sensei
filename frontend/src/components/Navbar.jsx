@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { GlobeAltIcon, RssIcon } from '@heroicons/react/24/outline';
+import { BASE_URL } from '../API';
 
 const Navbar = () => {
   const [productUrl, setProductUrl] = useState('');
@@ -14,7 +15,7 @@ const Navbar = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/categories');
+        const response = await axios.get(`${BASE_URL}/api/categories`);
         if (response.data.status === 'success') {
           setCategories(response.data.data);
         } else {
@@ -37,7 +38,7 @@ const Navbar = () => {
 
     setLoading(true);
     try {
-      const response = await axios.post('http://localhost:5000/api/product_url', { product_url: productUrl });
+      const response = await axios.post(`${BASE_URL}/api/product_url`, { product_url: productUrl });
       console.log(response);
       
       if (response.status === 200 || response.status === 201) {

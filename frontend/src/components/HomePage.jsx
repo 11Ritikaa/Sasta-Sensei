@@ -11,6 +11,7 @@ import SupportedStores from './SupportedStores';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import axios from 'axios';
+import { BASE_URL } from '../API';
 
 const HomePage = () => {
     const [products, setProducts] = useState([]);
@@ -18,7 +19,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/products/random');
+        const response = await axios.get(`${BASE_URL}/api/products/random`);
         const parsedProducts = response.data.data
         setProducts(parsedProducts); 
       } catch (error) {

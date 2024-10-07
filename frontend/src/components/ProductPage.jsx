@@ -5,6 +5,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Navbar from './Navbar';
 import Footer from './Footer';
 import PriceHistoryChart from './PriceHistoryChart';
+import { BASE_URL } from '../API';
 
 const ProductPage = () => {
   const { asin } = useParams();
@@ -22,7 +23,7 @@ const ProductPage = () => {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        const response = await axios.get(`http://localhost:5000/api/product`, {
+        const response = await axios.get(`${BASE_URL}/api/product`, {
           params: { id: asin }
         });
         setProduct(response.data.data);
@@ -51,7 +52,7 @@ const ProductPage = () => {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/notify-me', {
+      const response = await axios.post(`${BASE_URL}/api/notify-me`, {
         email,
         recaptchaToken,
         asin, // Include the product ID
