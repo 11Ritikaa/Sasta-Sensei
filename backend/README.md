@@ -21,7 +21,7 @@ Product Price Scraper is a web application that allows users to enter the name o
 1. Clone the repository to your local machine:
 
    ```
-   git clone https://github.com/your_username/product-price-scraper.git
+   git clone https://github.com/11Ritikaa/Sasta-Sensei.git
    ```
 
 2. Install the required Python packages:
