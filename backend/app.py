@@ -103,9 +103,6 @@ def get_products_by_cat():
     except Exception as e:
         return create_standard_response('Error',500,None,str(e))
 
-
-
-
 @app.route('/api/notify-me', methods=['POST'])
 def notify_me():
     ''''
@@ -155,15 +152,6 @@ def notify_me():
 
 @app.route('/api/unsubscribe',methods=['POST'])
 def unsubcribe():
-    '''
-        take the product id and user email 
-        check if the product is in the notification list
-            if it is then 
-                remove the email if present
-                return success the email is removed
-            else
-                error you're not tracking this product
-    '''
     body = request.get_json()
     email = body.get('email')
     asin = body.get('asin')
