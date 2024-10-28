@@ -1,6 +1,4 @@
-python
-flask
-cors
-pyMongo
-Amazon PAAPI
-SMTPlib
+Flask==2.3.2
+flask-cors==4.0.1
+pymongo==4.10.1
+paapi5-python-sdk==1.1.0

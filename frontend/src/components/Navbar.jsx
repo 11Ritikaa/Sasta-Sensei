@@ -39,7 +39,6 @@ const Navbar = () => {
     setLoading(true);
     try {
       const response = await axios.post(`${BASE_URL}/api/product_url`, { product_url: productUrl });
-      console.log(response);
       
       if (response.status === 200 || response.status === 201) {
         const productID = response.data.data;

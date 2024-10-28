@@ -56,7 +56,6 @@ const ProductPage = () => {
 
   const handleNotifyMe = async () => {
     if (!recaptchaToken) {
-      console.log("Please complete the reCAPTCHA");
       return;
     }
 
@@ -67,7 +66,6 @@ const ProductPage = () => {
         asin,
         price: product.currentPrice,
       });
-      console.log("Notification request sent:", response.data);
       setNotificationSent(true);
     } catch (error) {
       console.error("Error sending notification:", error);

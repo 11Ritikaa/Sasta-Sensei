@@ -1,11 +1,25 @@
-
+import os
+import logging
 from email.mime.multipart import MIMEMultipart
 from pymongo import MongoClient
 from smtplib import SMTP
 from email.mime.text import MIMEText
 from dotenv import load_dotenv
-import os
+from datetime import datetime
+
 load_dotenv()
+
+# Directory for log files
+log_directory = os.path.join(os.getcwd(), 'logs')
+if not os.path.exists(log_directory):
+    os.makedirs(log_directory)
+
+# Log file path
+current_date = datetime.now().strftime('%Y-%m-%d')
+log_filename = os.path.join(log_directory, f'email_service_{current_date}.log')
+
+# Initialize logging
+logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime)s %(message)s')
 
 def create_email_body(product_name, current_price, last_notified_price, image_url, product_link, product_id):
     email_template = f"""
@@ -75,14 +89,13 @@ def create_email_body(product_name, current_price, last_notified_price, image_ur
         </div>
     </body>
     </html>
-    """
+    """  
     return email_template
 
-def send_batch_email(emails,subject,body):
+def send_batch_email(emails, subject, body):
     msg = MIMEMultipart()
     msg['Subject'] = subject
     msg['From'] = os.getenv('SMTP_USER')
-    #  # Use BCC to send one email to multiple users
     msg.attach(MIMEText(body, 'html'))
 
     try:
@@ -90,40 +103,38 @@ def send_batch_email(emails,subject,body):
             smtp.starttls()
             smtp.login(os.getenv('SMTP_USER'), os.getenv('SMTP_PASSWORD'))
             smtp.sendmail(os.getenv('SMTP_USER'), emails, msg.as_string())
-            print(f"Batch email sent to {len(emails)} users.")
+            logging.info(f"Batch email sent to {len(emails)} users.")
     except Exception as e:
-        print(f"Failed to send batch email: {e}")
+        logging.error(f"Failed to send batch email: {e}")
 
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
-    print(os.getenv('MONGO_URI'))
     db = client[os.getenv('DBNAME')]  
     notification_collection = db[os.getenv('NOTIFICATIONS')] 
-    print("MongoDB connection successful")
+    logging.info("MongoDB connection successful")
 
     result_list = notification_collection.aggregate([
-    {
-        "$lookup": {
-            "from": os.getenv('PRODUCTS'), 
-            "localField": "_id",  
-            "foreignField": "_id", 
-            "as": "productDetails" 
+        {
+            "$lookup": {
+                "from": os.getenv('PRODUCTS'), 
+                "localField": "_id",  
+                "foreignField": "_id", 
+                "as": "productDetails" 
+            }
+        },
+        {
+            "$project": {
+                "_id": 1, 
+                "emails": 1, 
+                "lastNotifiedPrice": 1, 
+                "productDetails._id": 1,  
+                "productDetails.productTitle": 1, 
+                "productDetails.currentPrice": 1,
+                "productDetails.pageUrl": 1,
+                "productDetails.imageUrl": 1
+            }
         }
-    },
-    {
-        "$project": {
-            "_id": 1, 
-            "emails": 1, 
-            "lastNotifiedPrice": 1, 
-            "productDetails._id": 1,  
-            "productDetails.productTitle": 1, 
-            "productDetails.currentPrice": 1,
-            "productDetails.pageUrl": 1,
-            "productDetails.imageUrl": 1
-        }
-    }
     ])
-
 
     for notification in result_list:
         if not notification['productDetails']:
@@ -140,15 +151,19 @@ try:
         if current_price < last_notified_price:
             if emails:
                 subject = f"Price Drop Alert"
-                body = create_email_body(productTitle,current_price,last_notified_price,image_url,product_link,product_id)
-                send_batch_email(emails, subject,body)
+                body = create_email_body(productTitle, current_price, last_notified_price, image_url, product_link, product_id)
+                send_batch_email(emails, subject, body)
             notification_collection.update_one(
                 {"_id": notification['_id']},
                 {"$set": {"lastNotifiedPrice": current_price}}
             )
-            print(f"Updated lastNotifiedPrice for {product['_id']} to {current_price}")
+            logging.info(f"Updated lastNotifiedPrice for product {product['_id']} to {current_price}")
         else:
-            print(f"No price drop for {product['_id']} ({product['productTitle']}).")
-except Exception as e:
-    print(f"Something went Wrong: {str(e)}")
+            logging.info(f"No price drop for product {product['_id']} ({product['productTitle']}).")
 
+except Exception as e:
+    logging.error(f"An error occurred: {str(e)}")
+finally:
+    if 'client' in locals():
+        client.close()
+        logging.info("MongoDB connection closed.")
