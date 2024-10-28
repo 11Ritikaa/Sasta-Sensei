@@ -97,14 +97,14 @@ def send_batch_email(emails,subject,body):
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
     print(os.getenv('MONGO_URI'))
-    db = client['amazon_price_tracker']  
-    notification_collection = db['notifications'] 
+    db = client[os.getenv('DBNAME')]  
+    notification_collection = db[os.getenv('NOTIFICATIONS')] 
     print("MongoDB connection successful")
 
     result_list = notification_collection.aggregate([
     {
         "$lookup": {
-            "from": "test_products", 
+            "from": os.getenv('PRODUCTS'), 
             "localField": "_id",  
             "foreignField": "_id", 
             "as": "productDetails" 

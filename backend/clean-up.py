@@ -18,8 +18,8 @@ logging.basicConfig(filename=log_filename, level=logging.INFO, format='%(asctime
 def cleanup_notifications():
     try:
         client = MongoClient(os.getenv('MONGO_URI'))
-        db = client['amazon_price_tracker']
-        notifications_collection = db['notifications']
+        db = client[os.getenv('DBNAME')]
+        notifications_collection = db[os.getenv('NOTIFICATIONS')]
 
         logging.info("Cleanup started...")
 

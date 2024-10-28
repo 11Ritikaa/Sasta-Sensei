@@ -4,9 +4,9 @@ from utils import create_notify_data
 
 try:
     client = MongoClient(os.getenv('MONGO_URI'))
-    db = client['amazon_price_tracker']
-    collection = db['test_products']
-    notification_collection = db['notifications'] 
+    db = client[os.getenv('DBNAME')]
+    collection = db[os.getenv('PRODUCTS')]
+    notification_collection = db[os.getenv('NOTIFICATIONS')] 
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")

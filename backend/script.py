@@ -2,6 +2,7 @@ import time
 from pymongo import MongoClient
 from datetime import datetime
 from api import get_price_info
+import os
 
 def generate_price_update_query(price: int, max_price: int, min_price: int, discountPercent):
     price_history_entry = {
@@ -30,19 +31,17 @@ def generate_price_update_query(price: int, max_price: int, min_price: int, disc
     return query
 
 try:
-    client = MongoClient('mongodb+srv://superjunkie:1234567899@cluster0.nwirkbp.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
-    db = client['amazon_price_tracker'] 
-    collection = db['test_products'] 
+    client = MongoClient(os.getenv('MONGO_URI'))
+    db = client[os.getenv('DBNAME')] 
+    collection = db[os.getenv('PRODUCTS')] 
     print("MongoDB connection successful")
 except Exception as e:
     print(f"Failed to connect to MongoDB: {str(e)}")
-
 
 results = collection.find({},{'currentPrice': 1, 'maxPrice':1 , 'minPrice': 1 })
 result_list = list(results)
 
 ids = [result['_id'] for result in result_list]
-
 
 for i in range(0, len(ids), 10):
 
