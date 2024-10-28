@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import axios from 'axios';
-import ReCAPTCHA from 'react-google-recaptcha';
-import Navbar from './Navbar';
-import Footer from './Footer';
-import PriceHistoryChart from './PriceHistoryChart';
-import { BASE_URL } from '../API';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
+import ReCAPTCHA from "react-google-recaptcha";
+import Navbar from "./Navbar";
+import Footer from "./Footer";
+import PriceHistoryChart from "./PriceHistoryChart";
+import { BASE_URL } from "../API";
 
 const ProductPage = () => {
   const { asin } = useParams();
@@ -16,29 +16,38 @@ const ProductPage = () => {
     averagePrice: 0,
   });
   const [showAlertBox, setShowAlertBox] = useState(false);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
   const [recaptchaToken, setRecaptchaToken] = useState(null);
-  const [notificationSent, setNotificationSent] = useState(false); // To track notification state
+  const [notificationSent, setNotificationSent] = useState(false);
 
   useEffect(() => {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(`${BASE_URL}/api/product`, {
-          params: { id: asin }
+          params: { id: asin },
         });
         setProduct(response.data.data);
       } catch (error) {
-        console.error('Error fetching product:', error);
+        console.error("Error fetching product:", error);
       }
     };
 
-    fetchProduct();
+    if (asin) {
+      fetchProduct();
+    }
   }, [asin]);
 
   if (!product) return <div>Loading...</div>;
 
   const handlePriceUpdate = (prices) => {
-    setPriceInfo(prices);
+    // Only update if prices are different to avoid infinite re-render
+    if (
+      prices.highestPrice !== priceInfo.highestPrice ||
+      prices.lowestPrice !== priceInfo.lowestPrice ||
+      prices.averagePrice !== priceInfo.averagePrice
+    ) {
+      setPriceInfo(prices);
+    }
   };
 
   const handleSetPriceAlert = () => {
@@ -47,7 +56,7 @@ const ProductPage = () => {
 
   const handleNotifyMe = async () => {
     if (!recaptchaToken) {
-      console.log('Please complete the reCAPTCHA');
+      console.log("Please complete the reCAPTCHA");
       return;
     }
 
@@ -55,18 +64,18 @@ const ProductPage = () => {
       const response = await axios.post(`${BASE_URL}/api/notify-me`, {
         email,
         recaptchaToken,
-        asin, // Include the product ID
-        price: product.currentPrice, // Send the current product price
+        asin,
+        price: product.currentPrice,
       });
-      console.log('Notification request sent:', response.data);
-      setNotificationSent(true); // Set notification state to true
+      console.log("Notification request sent:", response.data);
+      setNotificationSent(true);
     } catch (error) {
-      console.error('Error sending notification:', error);
+      console.error("Error sending notification:", error);
     }
   };
 
   const onRecaptchaChange = (token) => {
-    setRecaptchaToken(token); // Store the reCAPTCHA token on success
+    setRecaptchaToken(token);
   };
 
   return (
@@ -90,8 +99,12 @@ const ProductPage = () => {
             {/* Price Section */}
             <div className="text-xl mb-4">
               <s className="text-gray-500">₹{product.MRP}</s>
-              <span className="text-green-500 ml-2">({product.discountPercent}% off)</span>
-              <p className="text-green-600 font-bold text-2xl">₹{product.currentPrice}</p>
+              <span className="text-green-500 ml-2">
+                ({product.discountPercent}% off)
+              </span>
+              <p className="text-green-600 font-bold text-2xl">
+                ₹{product.currentPrice}
+              </p>
             </div>
 
             <p className="text-gray-500 text-sm mt-1">Amazon</p>
@@ -100,13 +113,15 @@ const ProductPage = () => {
               <div className="mt-4 p-4 bg-blue-100 rounded-md shadow-lg">
                 {notificationSent ? (
                   <p className="text-green-600 font-bold">
-                    You will be notified soon! The price alert has been set for this product.
+                    You will be notified soon! The price alert has been set for
+                    this product.
                   </p>
                 ) : (
                   <>
                     <h2 className="text-lg font-bold mb-2">Price Alert</h2>
                     <p className="mb-4">
-                      You will be notified when the price of this product drops. Please enter your email below:
+                      You will be notified when the price of this product drops.
+                      Please enter your email below:
                     </p>
                     <input
                       type="email"
@@ -136,7 +151,11 @@ const ProductPage = () => {
 
             {/* Action Buttons */}
             <div className="mt-6">
-              <a href={product.pageUrl} target='_blank' rel="noopener noreferrer">
+              <a
+                href={product.pageUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 <button className="bg-orange-500 text-white py-2 px-4 rounded hover:bg-orange-600 mr-2">
                   Buy on Amazon
                 </button>
@@ -156,13 +175,18 @@ const ProductPage = () => {
 
         {/* Price History Chart */}
         <div className="mt-10 mb-16">
-          <PriceHistoryChart data={product.priceHistory} onPriceUpdate={handlePriceUpdate} />
+          <PriceHistoryChart
+            data={product.priceHistory}
+            onPriceUpdate={handlePriceUpdate}
+          />
         </div>
 
-        <p className='font-sans'>
-          You can check the price history of <b>{product.productTitle}</b> above. 
-          This product price is <b>₹{product.currentPrice}</b> but the lowest price is <b>₹{priceInfo.lowestPrice}</b>.
-          The average and highest price are <b>₹{priceInfo.averagePrice}</b> and <b>₹{priceInfo.highestPrice}</b> respectively.
+        <p className="font-sans">
+          You can check the price history of <b>{product.productTitle}</b>{" "}
+          above. This product price is <b>₹{product.currentPrice}</b> but the
+          lowest price is <b>₹{priceInfo.lowestPrice}</b>. The average and
+          highest price are <b>₹{priceInfo.averagePrice}</b> and{" "}
+          <b>₹{priceInfo.highestPrice}</b> respectively.
         </p>
       </div>
       <Footer />

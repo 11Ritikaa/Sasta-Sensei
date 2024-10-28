@@ -1,21 +1,20 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 // eslint-disable-next-line react/prop-types
 const PriceHistory = ({ products = [] }) => {
   const navigate = useNavigate();
 
   const handleProductClick = (asin) => {
-    
     navigate(`/product/${asin}`);
   };
 
-  console.log('Products in PriceHistory:', products);
+  // console.log('Products in PriceHistory:', products);
 
-   // Limit to top 10 products
-   // const topProducts = products.slice(0, 10);
+  // Limit to top 10 products
+  // const topProducts = products.slice(0, 10);
 
   const handleViewAllDeals = () => {
-    navigate('/products');
+    navigate("/products");
   };
 
   return (
@@ -31,9 +30,9 @@ const PriceHistory = ({ products = [] }) => {
       </div>
       {products.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {products.map(product => (
+          {products.map((product, index) => (
             <div
-              key={product.id}
+              key={index}
               className="bg-white p-4 rounded-lg shadow-md cursor-pointer"
               onClick={() => handleProductClick(product._id)}
             >
@@ -43,11 +42,16 @@ const PriceHistory = ({ products = [] }) => {
                 className="w-full h-36 object-contain rounded-md mb-2"
               />
               <div className="text-center">
-                <h3 className="font-bold text-lg">{product.productTitle}</h3><br/>
+                <h3 className="font-bold text-lg">{product.productTitle}</h3>
+                <br />
                 <div className="text-xl mb-4">
                   <s className="text-gray-500">₹{product.MRP}</s>
-                  <span className="text-green-500 ml-2">({product.discountPercent}% off)</span>
-                  <p className="text-green-600 font-bold text-2xl">₹{product.currentPrice}</p>
+                  <span className="text-green-500 ml-2">
+                    ({product.discountPercent}% off)
+                  </span>
+                  <p className="text-green-600 font-bold text-2xl">
+                    ₹{product.currentPrice}
+                  </p>
                 </div>
                 <p className="text-gray-500 text-sm mt-1">Amazon</p>
               </div>
@@ -60,6 +64,5 @@ const PriceHistory = ({ products = [] }) => {
     </div>
   );
 };
-
 
 export default PriceHistory;
