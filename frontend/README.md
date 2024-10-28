@@ -6,7 +6,7 @@ Sasta Sansei is a free tool to check price history charts for millions of produc
 ## Features
 
 - User-friendly web interface to enter the product name and fetch prices.
-- Scrapes prices from both Flipkart and Amazon websites.
+- Scrapes prices from Amazon website.
 - Displays the fetched prices on the web page.
 
 ## Prerequisites

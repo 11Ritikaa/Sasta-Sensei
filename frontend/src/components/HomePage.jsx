@@ -30,7 +30,7 @@ const HomePage = () => {
 
     fetchProducts();
   }, []);
-  console.log(products)
+  // console.log(products)
   return (
     <div>
       <Navbar />
