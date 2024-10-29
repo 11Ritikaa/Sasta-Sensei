@@ -21,10 +21,9 @@ const CategoryPage = () => {
         } else {
           setError('No products found for this category.');
         }
-      // eslint-disable-next-line no-unused-vars
-      } catch (error) {
+      } catch {
         setError('An error occurred while fetching products.');
-      }
+    }
     };
 
     fetchProductsByCategory();
@@ -45,7 +44,7 @@ const CategoryPage = () => {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {products.map((product) => (
-              <div key={product.id} className="border rounded-lg shadow-md p-4">
+              <div key={product._id} className="border rounded-lg shadow-md p-4">
                 <img src={product.imageUrl} alt={product.productTitle} className="w-full h-48 object-contain mb-4" />
                 <h2 className="font-bold text-lg">{product.productTitle}</h2><br/>
                 <div className="text-xl mb-4">

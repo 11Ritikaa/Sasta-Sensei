@@ -43,7 +43,14 @@ const PriceHistoryChart = ({ data = [], onPriceUpdate = null }) => {
                         tickFormatter={formatYAxis}
                     />
                     <Tooltip formatter={(value) => `₹${value}`} />
-                    <Line type="monotone" dataKey="price" stroke="#8884d8" strokeWidth={2} fillOpacity={1} fill="url(#colorPrice)" />
+                    <Line
+                        type="monotone"
+                        dataKey="price"
+                        stroke="#8884d8"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorPrice)"
+                    />
 
                     {/* Reference lines for Highest, Average, and Lowest prices */}
                     <ReferenceLine
