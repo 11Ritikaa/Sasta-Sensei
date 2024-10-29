@@ -18,7 +18,7 @@ def get_all_products_db():
 
 def get_random_products_db():
     pipeline = [
-        { "$sample": { "size": 10 } },
+        { "$sample": { "size": 32 } },
         { "$project": { "priceHistory": 0 } } 
     ]
     random_products = list(collection.aggregate(pipeline))

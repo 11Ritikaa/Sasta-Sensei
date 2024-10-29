@@ -8,9 +8,6 @@ const PriceHistory = ({ products = [] }) => {
     navigate(`/product/${asin}`);
   };
 
-  // Limit to top 10 products
-  // const topProducts = products.slice(0, 10);
-
   const handleViewAllDeals = () => {
     navigate("/products");
   };

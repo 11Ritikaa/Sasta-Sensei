@@ -63,9 +63,7 @@ const Navbar = () => {
       <div className="container mx-auto flex justify-between items-center py-2 px-4">
         <div className="flex items-center">
           <div className="text-sm flex space-x-4">
-            <a href="#" className="hover:underline">Features</a>
             <a href="#" className="hover:underline">Latest Deals</a>
-            <a href="#" className="hover:underline">Supported Stores</a>
           </div>
         </div>
         <div className="flex items-center space-x-4">
@@ -81,7 +79,7 @@ const Navbar = () => {
         <div className="container mx-auto flex items-center justify-between">
           <div className="flex items-center ml-4">
             <img src="../src/assets/logo.png" alt="Logo" className="w-10 h-10 mr-1" />
-            <Link to="/" className="text-xl font-bold">SastaSensei</Link>
+            <Link to="/" className="text-xl font-bold">MeraAlert</Link>
           </div>
           <form onSubmit={handleSearch} className="flex items-center space-x-2 mr-5">
             <span className="text-white ml-2">Quick Search</span>
